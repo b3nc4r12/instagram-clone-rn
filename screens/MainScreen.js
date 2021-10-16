@@ -21,10 +21,14 @@ const MainScreen = ({ navigation }) => {
                     <SearchScreen />
                     <BottomTabs icons={bottomTabIcons} component={component} setComponent={setComponent} />
                 </>
-            ) : component == "Profile" && (
+            ) : component == "Profile" ? (
                 <>
                     <ProfileScreen icons={bottomTabIcons} component={component} setComponent={setComponent} />
                 </>
+            ) : component == "Reels" ? (
+                <BottomTabs icons={bottomTabIcons} component={component} setComponent={setComponent} />
+            ) : component == "Shop" && (
+                <BottomTabs icons={bottomTabIcons} component={component} setComponent={setComponent} />
             )}
         </SafeAreaView>
     )

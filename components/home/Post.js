@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native"
+import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from "react-native"
 import { Divider } from "react-native-elements"
 import { firebase, db } from "../../firebase"
 import { useNavigation } from "@react-navigation/core"
@@ -94,22 +94,24 @@ const Post = ({ post, index }) => {
     )
 }
 
-const PostHeader = ({ post, navigation }) => (
-    <View style={{ flexDirection: "row", justifyContent: "space-between", margin: 5, marginVertical: 10, paddingHorizontal: 8, alignItems: "center" }}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Image source={{ uri: post.profile_picture }} style={styles.postImage} />
-            <Text
-                onPress={() => navigation.navigate("AccountScreen", { email: post.owner_email })}
-                style={{ color: "white", marginLeft: 8, fontWeight: "700" }}
-            >
-                {post.user}
-            </Text>
+const PostHeader = ({ post, navigation }) => {
+    return (
+        <View style={{ flexDirection: "row", justifyContent: "space-between", margin: 5, marginVertical: 10, paddingHorizontal: 8, alignItems: "center" }}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Image source={{ uri: post.profile_picture }} style={styles.postImage} />
+                <Text
+                    onPress={() => navigation.navigate("AccountScreen", { email: post.owner_email })}
+                    style={{ color: "white", marginLeft: 8, fontWeight: "700" }}
+                >
+                    {post.user}
+                </Text>
+            </View>
+            <TouchableOpacity>
+                <Image source={{ uri: "https://img.icons8.com/ios-glyphs/30/ffffff/ellipsis.png" }} style={{ width: 15, height: 15, resizeMode: "contain" }} />
+            </TouchableOpacity>
         </View>
-        <TouchableOpacity>
-            <Image source={{ uri: "https://img.icons8.com/ios-glyphs/30/ffffff/ellipsis.png" }} style={{ width: 15, height: 15, resizeMode: "contain" }} />
-        </TouchableOpacity>
-    </View>
-)
+    )
+}
 
 const PostImage = ({ post }) => (
     <View style={{ width: "100%", height: 450 }}>
