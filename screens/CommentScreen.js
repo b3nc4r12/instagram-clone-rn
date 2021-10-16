@@ -9,7 +9,9 @@ import {
     ScrollView,
     TextInput,
     Button,
-    Keyboard
+    Keyboard,
+    KeyboardAvoidingView,
+    Platform
 } from "react-native"
 import { useNavigation } from "@react-navigation/core"
 import { Divider } from "react-native-elements"
@@ -98,83 +100,85 @@ const CommentScreen = ({ route }) => {
     }, [db, userInfo])
 
     return (
-        <SafeAreaView style={styles.container}>
-            <Header navigation={navigation} />
-            <Divider width={1} color="#303030" />
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={{ flexDirection: "row", padding: 10, alignItems: "center" }}>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+            <SafeAreaView style={styles.container}>
+                <Header navigation={navigation} />
+                <Divider width={1} color="#303030" />
+                <ScrollView showsVerticalScrollIndicator={false}>
+                    <View style={{ flexDirection: "row", padding: 10, alignItems: "center" }}>
+                        <Image
+                            source={{ uri: post?.profilePicture }}
+                            style={{ width: 40, height: 40, borderRadius: 40, marginRight: 8 }}
+                        />
+                        <View>
+                            <Text>
+                                <Text style={{ color: "white", fontWeight: "800" }}>{post?.username}</Text>
+                                <Text style={{ color: "white" }}> {post?.caption}</Text>
+                            </Text>
+                        </View>
+                    </View>
+                    <Divider width={1} color="#303030" />
+                    {comments && (
+                        <>
+                            {comments?.map((comment) => (
+                                <View key={comment.comment} style={{ flexDirection: "row", padding: 10, alignItems: "center" }}>
+                                    <Image
+                                        source={{ uri: comment.userImage }}
+                                        style={{ width: 40, height: 40, borderRadius: 40, marginRight: 8 }}
+                                    />
+                                    <View>
+                                        <Text>
+                                            <Text style={{ color: "white", fontWeight: "800" }}>{comment.user}</Text>
+                                            <Text style={{ color: "white" }}> {comment.comment}</Text>
+                                        </Text>
+                                    </View>
+                                </View>
+                            ))}
+                        </>
+                    )}
+                </ScrollView>
+                <View
+                    style={{
+                        position: "absolute",
+                        bottom: 0,
+                        backgroundColor: "black",
+                        paddingBottom: 30,
+                        paddingHorizontal: 20,
+                        paddingTop: 20,
+                        flexDirection: "row",
+                        width: "100%"
+                    }}
+                >
                     <Image
-                        source={{ uri: post?.profilePicture }}
-                        style={{ width: 40, height: 40, borderRadius: 40, marginRight: 8 }}
+                        source={{ uri: userInfo?.profilePicture }}
+                        style={{ width: 45, height: 45, borderRadius: 45, marginRight: 8 }}
                     />
-                    <View>
-                        <Text>
-                            <Text style={{ color: "white", fontWeight: "800" }}>{post?.username}</Text>
-                            <Text style={{ color: "white" }}> {post?.caption}</Text>
-                        </Text>
+                    <View style={{
+                        height: 45,
+                        flex: 1,
+                        flexDirection: "row",
+                        borderWidth: 1,
+                        borderColor: "#303030",
+                        borderRadius: 45,
+                        alignItems: "center",
+                        paddingHorizontal: 10,
+                    }}
+                    >
+                        <TextInput
+                            placeholder={`Add a comment as ${userInfo?.username}...`}
+                            placeholderTextColor="#a9a9a9"
+                            style={{ flex: 1, color: "white" }}
+                            value={comment}
+                            onFocus={() => setPressed(true)}
+                            onChange={(e) => setComment(e.nativeEvent.text)}
+                        />
+                        {pressed && (
+                            <Button title="Post" disabled={!comment.trim()} onPress={handleComment} />
+                        )}
                     </View>
                 </View>
-                <Divider width={1} color="#303030" />
-                {comments && (
-                    <>
-                        {comments?.map((comment) => (
-                            <View key={comment.comment} style={{ flexDirection: "row", padding: 10, alignItems: "center" }}>
-                                <Image
-                                    source={{ uri: comment.userImage }}
-                                    style={{ width: 40, height: 40, borderRadius: 40, marginRight: 8 }}
-                                />
-                                <View>
-                                    <Text>
-                                        <Text style={{ color: "white", fontWeight: "800" }}>{comment.user}</Text>
-                                        <Text style={{ color: "white" }}> {comment.comment}</Text>
-                                    </Text>
-                                </View>
-                            </View>
-                        ))}
-                    </>
-                )}
-            </ScrollView>
-            <View
-                style={{
-                    position: "absolute",
-                    bottom: 0,
-                    backgroundColor: "black",
-                    paddingBottom: 30,
-                    paddingHorizontal: 20,
-                    paddingTop: 20,
-                    flexDirection: "row",
-                    width: "100%"
-                }}
-            >
-                <Image
-                    source={{ uri: userInfo?.profilePicture }}
-                    style={{ width: 45, height: 45, borderRadius: 45, marginRight: 8 }}
-                />
-                <View style={{
-                    height: 45,
-                    flex: 1,
-                    flexDirection: "row",
-                    borderWidth: 1,
-                    borderColor: "#303030",
-                    borderRadius: 45,
-                    alignItems: "center",
-                    paddingHorizontal: 10,
-                }}
-                >
-                    <TextInput
-                        placeholder={`Add a comment as ${userInfo?.username}...`}
-                        placeholderTextColor="#a9a9a9"
-                        style={{ flex: 1, color: "white" }}
-                        value={comment}
-                        onFocus={() => setPressed(true)}
-                        onChange={(e) => setComment(e.nativeEvent.text)}
-                    />
-                    {pressed && (
-                        <Button title="Post" disabled={!comment.trim()} onPress={handleComment} />
-                    )}
-                </View>
-            </View>
-        </SafeAreaView>
+            </SafeAreaView>
+        </KeyboardAvoidingView>
     )
 }
 

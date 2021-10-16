@@ -1,5 +1,5 @@
 import React from "react"
-import { KeyboardAvoidingView, LogBox, Platform } from "react-native"
+import { LogBox, Platform } from "react-native"
 import { SafeAreaProvider } from "react-native-safe-area-context"
 import AuthNavigation from "./AuthNavigation"
 
@@ -10,9 +10,7 @@ const App = () => {
 
   return (
     <SafeAreaProvider>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-        <AuthNavigation />
-      </KeyboardAvoidingView>
+      <AuthNavigation />
     </SafeAreaProvider>
   )
 }
