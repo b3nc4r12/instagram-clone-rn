@@ -66,7 +66,6 @@ const styles = StyleSheet.create({
         position: "absolute",
         width: "100%",
         bottom: "3%",
-        zIndex: 999,
         backgroundColor: "#000"
     },
     container: {

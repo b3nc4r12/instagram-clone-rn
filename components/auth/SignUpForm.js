@@ -28,7 +28,10 @@ const SignUpForm = ({ navigation }) => {
                 name,
                 username,
                 email: authUser.user.email,
-                profile_picture: await getRandomProfilePicture()
+                profile_picture: await getRandomProfilePicture(),
+                followers: [],
+                following: [],
+                bio: ""
             })
         } catch (error) {
             Alert.alert(error.message)

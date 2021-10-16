@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { View, Text, SafeAreaView } from "react-native"
+import { SafeAreaView } from "react-native"
 import HomeScreen from "./HomeScreen"
 import BottomTabs from "../components/home/BottomTabs"
 import { bottomTabIcons } from "../data/bottomTabIcons"
@@ -12,13 +12,20 @@ const MainScreen = ({ navigation }) => {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: "black" }}>
             {component == "Home" ? (
-                <HomeScreen navigation={navigation} />
+                <>
+                    <HomeScreen navigation={navigation} />
+                    <BottomTabs icons={bottomTabIcons} component={component} setComponent={setComponent} />
+                </>
             ) : component == "Search" ? (
-                <SearchScreen />
+                <>
+                    <SearchScreen />
+                    <BottomTabs icons={bottomTabIcons} component={component} setComponent={setComponent} />
+                </>
             ) : component == "Profile" && (
-                <ProfileScreen />
+                <>
+                    <ProfileScreen icons={bottomTabIcons} component={component} setComponent={setComponent} />
+                </>
             )}
-            <BottomTabs icons={bottomTabIcons} component={component} setComponent={setComponent} />
         </SafeAreaView>
     )
 }

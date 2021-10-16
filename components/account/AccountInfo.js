@@ -1,29 +1,53 @@
 import React, { useEffect, useState } from "react"
-import { View, Text, StyleSheet, Image, Pressable } from "react-native"
+import { View, Text, StyleSheet, Pressable, Image } from "react-native"
 import { db, firebase } from "../../firebase"
 import { useNavigation } from "@react-navigation/core"
 
-const ProfileInfo = () => {
+const AccountInfo = ({ email }) => {
     const navigation = useNavigation();
 
     const [currentLoggedInUser, setCurrentLoggedInUser] = useState(null);
+    const [account, setAccount] = useState(null);
     const [noOfPosts, setNoOfPosts] = useState(null);
     const [noOfFollowers, setNoOfFollowers] = useState(null);
     const [noOfFollowing, setNoOfFollowing] = useState(null);
+    const [following, setFollowing] = useState(null);
+    const [currentFollowingStatus, setCurrentFollowingStatus] = useState(null);
+
+    const checkIfUserIsFollowed = () => {
+        db.collection("users").doc(firebase.auth().currentUser.email).onSnapshot((snapshot) => {
+            setCurrentFollowingStatus(snapshot.data().following.includes(email))
+        })
+
+        setFollowing(currentFollowingStatus)
+    }
 
     const getUsername = () => {
         const user = firebase.auth().currentUser
         const unsubscribe = db
             .collection("users")
-            .where("owner_uid", "==", user.uid)
-            .limit(1)
+            .doc(user.email)
             .onSnapshot((snapshot) => {
-                snapshot.docs.map((doc) => {
-                    setCurrentLoggedInUser({
-                        name: doc.data().name,
-                        bio: doc.data().bio,
-                        profilePicture: doc.data().profile_picture,
-                    })
+                setCurrentLoggedInUser({
+                    username: snapshot.data().username,
+                    following: snapshot.data().following
+                })
+            })
+
+        return unsubscribe
+    }
+
+    const getInfo = () => {
+        const unsubscribe = db
+            .collection("users")
+            .doc(email)
+            .onSnapshot((snapshot) => {
+                setAccount({
+                    username: snapshot.data().username,
+                    name: snapshot.data().name,
+                    email: snapshot.data().email,
+                    bio: snapshot.data().bio,
+                    profilePicture: snapshot.data().profile_picture
                 })
             })
 
@@ -31,10 +55,9 @@ const ProfileInfo = () => {
     }
 
     const getNumberOfPosts = () => {
-        const user = firebase.auth().currentUser
         const unsubscribe = db
             .collection("users")
-            .doc(user.email)
+            .doc(email)
             .collection("posts")
             .onSnapshot((snapshot) => {
                 setNoOfPosts(snapshot.size)
@@ -44,10 +67,9 @@ const ProfileInfo = () => {
     }
 
     const getNumberOfFollowers = () => {
-        const user = firebase.auth().currentUser
         const unsubscribe = db
             .collection("users")
-            .doc(user.email)
+            .doc(email)
             .onSnapshot((snapshot) => {
                 setNoOfFollowers(snapshot.data().followers.length)
             })
@@ -56,10 +78,9 @@ const ProfileInfo = () => {
     }
 
     const getNumberOfFollowing = () => {
-        const user = firebase.auth().currentUser
         const unsubscribe = db
             .collection("users")
-            .doc(user.email)
+            .doc(email)
             .onSnapshot((snapshot) => {
                 setNoOfFollowing(snapshot.data().following.length)
             })
@@ -67,23 +88,63 @@ const ProfileInfo = () => {
         return unsubscribe
     }
 
+    const followUser = (email) => {
+        const loggedInUser = firebase.auth().currentUser
+        db
+            .collection("users")
+            .doc(email)
+            .update({
+                followers: firebase.firestore.FieldValue.arrayUnion(loggedInUser.email)
+            })
+            .then(() => setFollowing(true))
+
+        db
+            .collection("users")
+            .doc(loggedInUser.email)
+            .update({
+                following: firebase.firestore.FieldValue.arrayUnion(email)
+            })
+            .then(() => setFollowing(true))
+    }
+
+    const unfollowUser = (email) => {
+        const loggedInUser = firebase.auth().currentUser
+        db
+            .collection("users")
+            .doc(email)
+            .update({
+                followers: firebase.firestore.FieldValue.arrayRemove(loggedInUser.email)
+            })
+            .then(() => setFollowing(false))
+
+        db
+            .collection("users")
+            .doc(loggedInUser.email)
+            .update({
+                following: firebase.firestore.FieldValue.arrayRemove(email)
+            })
+            .then(() => setFollowing(false))
+    }
+
     useEffect(() => {
         let mounted = true
 
         if (mounted) {
+            getInfo();
             getUsername();
             getNumberOfPosts();
             getNumberOfFollowers();
             getNumberOfFollowing();
+            checkIfUserIsFollowed();
         }
 
         return () => mounted = false
-    }, [])
+    }, [currentFollowingStatus])
 
     return (
         <View style={styles.container}>
-            <Top user={currentLoggedInUser} noOfPosts={noOfPosts} noOfFollowers={noOfFollowers} noOfFollowing={noOfFollowing} />
-            <Bottom navigation={navigation} user={currentLoggedInUser} />
+            <Top user={account} noOfFollowers={noOfFollowers} noOfFollowing={noOfFollowing} noOfPosts={noOfPosts} />
+            <Bottom navigation={navigation} following={following} unfollowUser={unfollowUser} followUser={followUser} loggedInUser={currentLoggedInUser} user={account} />
         </View>
     )
 }
@@ -116,13 +177,27 @@ const Top = ({ user, noOfPosts, noOfFollowers, noOfFollowing }) => (
     </View>
 )
 
-const Bottom = ({ user, navigation }) => (
+const Bottom = ({ user, loggedInUser, followUser, following, unfollowUser, navigation }) => (
     <View style={styles.bottomContainer}>
         <Text style={{ color: "white", fontWeight: "800" }}>{user?.name}</Text>
         <Text style={{ color: "white", paddingBottom: 8 }}>{user?.bio}</Text>
-        <Pressable onPress={() => navigation.navigate("EditScreen")} style={styles.editButton}>
-            <Text style={{ color: "white", fontWeight: "800", fontSize: 14 }}>Edit Profile</Text>
-        </Pressable>
+        {loggedInUser?.username == user?.username ? (
+            <Pressable onPress={() => navigation.navigate("EditScreen")} style={styles.editButton}>
+                <Text style={{ color: "white", fontWeight: "800", fontSize: 14 }}>Edit Profile</Text>
+            </Pressable>
+        ) : (
+            <>
+                {following ? (
+                    <Pressable onPress={() => unfollowUser(user.email)} style={styles.editButton}>
+                        <Text style={{ color: "white", fontWeight: "800", fontSize: 14 }}>Following</Text>
+                    </Pressable>
+                ) : (
+                    <Pressable onPress={() => followUser(user.email)} style={[styles.editButton, { backgroundColor: "#0095f6" }]}>
+                        <Text style={{ color: "white", fontWeight: "800", fontSize: 14 }}>Follow</Text>
+                    </Pressable>
+                )}
+            </>
+        )}
     </View>
 )
 
@@ -187,4 +262,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default ProfileInfo
+export default AccountInfo

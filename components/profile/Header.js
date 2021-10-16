@@ -1,13 +1,15 @@
-import { useNavigation } from "@react-navigation/core"
 import React, { useEffect, useState } from "react"
 import { Image, StyleSheet, TouchableOpacity } from "react-native"
 import { View, Text } from "react-native"
 import { db, firebase } from "../../firebase"
+import { useNavigation } from "@react-navigation/core"
 
-const Header = () => {
+const Header = ({ bottomSheetRef }) => {
     const navigation = useNavigation();
 
     const [currentLoggedInUser, setCurrentLoggedInUser] = useState(null);
+
+    const openBottomSheet = () => bottomSheetRef.current.expand()
 
     const getUsername = () => {
         const user = firebase.auth().currentUser
@@ -42,7 +44,7 @@ const Header = () => {
                         style={styles.icon}
                     />
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={openBottomSheet}>
                     <Image
                         source={{
                             uri: "https://img.icons8.com/material-outlined/24/ffffff/menu--v1.png"

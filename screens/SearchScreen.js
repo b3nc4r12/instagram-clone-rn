@@ -1,9 +1,12 @@
+import { useNavigation } from "@react-navigation/core";
 import React, { useEffect, useState } from "react"
 import { View, Text, SafeAreaView, TextInput, TouchableOpacity, ScrollView, Image } from "react-native"
 import { Divider, Icon } from "react-native-elements"
 import { db } from "../firebase";
 
 const SearchScreen = () => {
+    const navigation = useNavigation();
+
     const [searchInput, setSearchInput] = useState("");
     const [users, setUsers] = useState(null);
 
@@ -68,6 +71,7 @@ const SearchScreen = () => {
                             paddingHorizontal: 20
                         }}
                         key={user.id}
+                        onPress={() => navigation.navigate("AccountScreen", { email: user.email })}
                     >
                         <Image
                             source={{ uri: user.profile_picture }}

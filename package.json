@@ -1,9 +1,11 @@
 {
   "dependencies": {
+    "@gorhom/bottom-sheet": "^4",
     "@react-navigation/native": "^6.0.5",
     "@react-navigation/native-stack": "^6.2.3",
     "email-validator": "^2.0.4",
     "expo": "~42.0.0",
+    "expo-image-picker": "^10.2.3",
     "expo-status-bar": "~1.0.4",
     "firebase": "8.2.3",
     "formik": "^2.2.9",
@@ -11,10 +13,13 @@
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
     "react-native-elements": "^3.4.2",
+    "react-native-gesture-handler": "~1.10.2",
+    "react-native-reanimated": "~2.2.0",
     "react-native-safe-area-context": "3.2.0",
     "react-native-screens": "~3.4.0",
     "react-native-vector-icons": "^8.1.0",
     "react-native-web": "~0.13.12",
+    "reanimated-bottom-sheet": "^1.0.0-alpha.22",
     "valid-url": "^1.0.9",
     "yup": "^0.32.9"
   },

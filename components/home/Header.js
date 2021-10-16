@@ -1,11 +1,10 @@
 import React from "react"
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native"
-import { firebase } from "../../firebase"
 
 const Header = ({ navigation }) => {
     return (
         <View style={styles.container}>
-            <TouchableOpacity onPress={() => firebase.auth().signOut()}>
+            <TouchableOpacity>
                 <Image style={styles.logo} source={require("../../assets/header-logo.png")} />
             </TouchableOpacity>
             <View style={styles.iconsContainer}>

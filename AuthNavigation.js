@@ -7,7 +7,9 @@ const AuthNavigation = () => {
 
     const userHandler = (user) => user ? setCurrentUser(user) : setCurrentUser(null);
 
-    useEffect(() => firebase.auth().onAuthStateChanged((user) => userHandler(user)), [])
+    useEffect(() => {
+        firebase.auth().onAuthStateChanged((user) => userHandler(user))
+    }, [])
 
     return <>{currentUser ? <SignedInStack /> : <SignedOutStack />}</>
 }
